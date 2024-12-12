@@ -1,0 +1,3 @@
+# Declare files that will always have LF line endings on checkout.
+# If you clone on windows the testcases/configs would be broken without this.
+*.txt text eol=lf

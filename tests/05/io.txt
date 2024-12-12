@@ -1,0 +1,25 @@
+> Welcome to Entertaining Spice Pretending!
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 5_c 3_w 3_w 3_w 8_w 8_w
+? P1 > 
+< draw
+> 
+> Player 2:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 1_c 10_c 10_c 7_p 9_p 9_p
+? P2 > 
+< draw
+> 
+> Player 1: 0 points
+> Player 2: 0 points
+> 
+> Congratulations! Player 1 wins the game!
+> Congratulations! Player 2 wins the game!

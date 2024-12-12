@@ -1,0 +1,103 @@
+> Welcome to Entertaining Spice Pretending!
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 7_c 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< play 7_w 1_c 
+> 
+> Player 2:
+>     latest played card: 1_c
+>     cards played this round: 1
+>     hand cards: 3_c 7_c 7_p 8_p 6_w 10_w
+? P2 > 
+< play 3_c 3_c
+> 
+> Player 1:
+>     latest played card: 3_c
+>     cards played this round: 2
+>     hand cards: 7_c 6_p 9_p 10_p 2_w
+? P1 > 
+< play 9_p 10_c
+> 
+> Player 2:
+>     latest played card: 10_c
+>     cards played this round: 3
+>     hand cards: 7_c 7_p 8_p 6_w 10_w
+? P2 > 
+< play 7_p 3_c
+> 
+> Player 1:
+>     latest played card: 3_c
+>     cards played this round: 4
+>     hand cards: 7_c 6_p 10_p 2_w
+? P1 > 
+< play 6_p 4_c
+> 
+> Player 2:
+>     latest played card: 4_c
+>     cards played this round: 5
+>     hand cards: 7_c 8_p 6_w 10_w
+? P2 > 
+< play 7_c 7_c
+> 
+> Player 1:
+>     latest played card: 7_c
+>     cards played this round: 6
+>     hand cards: 7_c 10_p 2_w
+? P1 > 
+< play 10_p 10_c
+> 
+> Player 2:
+>     latest played card: 10_c
+>     cards played this round: 7
+>     hand cards: 8_p 6_w 10_w
+? P2 > 
+< play 6_w 2_c
+> 
+> Player 1:
+>     latest played card: 2_c
+>     cards played this round: 8
+>     hand cards: 7_c 2_w
+? P1 > 
+< play 2_w 3_c
+> 
+> Player 2:
+>     latest played card: 3_c
+>     cards played this round: 9
+>     hand cards: 8_p 10_w
+? P2 > 
+< play 10_w 4_c
+> 
+> Player 1:
+>     latest played card: 4_c
+>     cards played this round: 10
+>     hand cards: 7_c
+? P1 > 
+< play 7_c 5_c
+> 
+> Player 2:
+>     latest played card: 5_c LAST CARD
+>     cards played this round: 11
+>     hand cards: 8_p
+? P2 > 
+< challenge Spice
+> Challenge failed: 5_c's spice matches the real card 7_c.
+> Player 1 gets 11 points.
+> Player 1 gets 10 bonus points (last card).
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 2:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 1_p 4_p 8_p
+? P2 > 
+< quit

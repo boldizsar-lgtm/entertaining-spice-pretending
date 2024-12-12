@@ -1,0 +1,81 @@
+> Welcome to Entertaining Spice Pretending!
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 7_c 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< play 7_c 2_w
+> 
+> Player 2:
+>     latest played card: 2_w
+>     cards played this round: 1
+>     hand cards: 3_c 7_c 7_p 8_p 6_w 10_w
+? P2 > 
+< play 6_w 3_w
+> 
+> Player 1:
+>     latest played card: 3_w
+>     cards played this round: 2
+>     hand cards: 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< challenge value
+> Challenge successful: 3_w's value does not match the real card 6_w.
+> Player 1 gets 2 points.
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 2:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 3_c 7_c 1_p 4_p 7_p 8_p 10_w
+? P2 > 
+< play 1_p 1_p
+> 
+> Player 1:
+>     latest played card: 1_p
+>     cards played this round: 1
+>     hand cards: 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< play 6_p 2_p
+> 
+> Player 2:
+>     latest played card: 2_p
+>     cards played this round: 2
+>     hand cards: 3_c 7_c 4_p 7_p 8_p 10_w
+? P2 > 
+< play 3_c 3_p
+> 
+> Player 1:
+>     latest played card: 3_p
+>     cards played this round: 3
+>     hand cards: 9_p 10_p 2_w 7_w
+? P1 > 
+< draw
+> 
+> Player 2:
+>     latest played card: 3_p
+>     cards played this round: 3
+>     hand cards: 7_c 4_p 7_p 8_p 10_w
+? P2 > 
+< play 4_p 4_p
+> 
+> Player 1:
+>     latest played card: 4_p
+>     cards played this round: 4
+>     hand cards: 6_c 9_p 10_p 2_w 7_w
+? P1 > 
+< challenge spice
+> Challenge failed: 4_p's spice matches the real card 4_p.
+> Player 2 gets 4 points.
+> 
+> Player 2: 4 points
+> Player 1: 2 points
+> 
+> Congratulations! Player 2 wins the game!

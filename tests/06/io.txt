@@ -1,0 +1,137 @@
+> Welcome to Entertaining Spice Pretending!
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 7_c 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< play 7_c 3_c
+> 
+> Player 2:
+>     latest played card: 3_c
+>     cards played this round: 1
+>     hand cards: 3_c 7_c 7_p 8_p 6_w 10_w
+? P2 > 
+< play 3_c 4_c
+> 
+> Player 1:
+>     latest played card: 4_c
+>     cards played this round: 2
+>     hand cards: 6_p 9_p 10_p 2_w 7_w
+? P1 > 
+< play 6_p 6_c
+> 
+> Player 2:
+>     latest played card: 6_c
+>     cards played this round: 3
+>     hand cards: 7_c 7_p 8_p 6_w 10_w
+? P2 > 
+< play 7_c 7_c
+> 
+> Player 1:
+>     latest played card: 7_c
+>     cards played this round: 4
+>     hand cards: 9_p 10_p 2_w 7_w
+? P1 > 
+< play 9_p 9_c
+> 
+> Player 2:
+>     latest played card: 9_c
+>     cards played this round: 5
+>     hand cards: 7_p 8_p 6_w 10_w
+? P2 > 
+< play 10_w 10_c
+> 
+> Player 1:
+>     latest played card: 10_c
+>     cards played this round: 6
+>     hand cards: 10_p 2_w 7_w
+? P1 > 
+< play 10_p 1_c
+> 
+> Player 2:
+>     latest played card: 1_c
+>     cards played this round: 7
+>     hand cards: 7_p 8_p 6_w
+? P2 > 
+< play 7_p 7_c
+> 
+> Player 1:
+>     latest played card: 7_c
+>     cards played this round: 8
+>     hand cards: 2_w 7_w
+? P1 > 
+< play 2_w 8_c
+> 
+> Player 2:
+>     latest played card: 8_c
+>     cards played this round: 9
+>     hand cards: 8_p 6_w
+? P2 > 
+< play 8_p 9_c
+> 
+> Player 1:
+>     latest played card: 9_c
+>     cards played this round: 10
+>     hand cards: 7_w
+? P1 > 
+< play 7_w 10_c
+> 
+> Player 2:
+>     latest played card: 10_c LAST CARD
+>     cards played this round: 11
+>     hand cards: 6_w
+? P2 > 
+< challenge value
+> Challenge successful: 10_c's value does not match the real card 7_w.
+> Player 2 gets 11 points.
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 1_p 4_p
+? P1 > 
+< play 1_p 1_p
+> 
+> Player 2:
+>     latest played card: 1_p
+>     cards played this round: 1
+>     hand cards: 6_w
+? P2 > 
+< play 6_w 6_p
+> 
+> Player 1:
+>     latest played card: 6_p LAST CARD
+>     cards played this round: 2
+>     hand cards: 4_p
+? P1 > 
+< challenge value
+> Challenge failed: 6_p's value matches the real card 6_w.
+> Player 2 gets 2 points.
+> Player 2 gets 10 bonus points (last card).
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 6_c 3_p 4_p
+? P1 > 
+< play 3_p 3_p
+> 
+> Player 2:
+>     latest played card: 3_p
+>     cards played this round: 1
+>     hand cards: 3_c 7_c 8_p 4_w 9_w 10_w
+? P2 > 
+< quit

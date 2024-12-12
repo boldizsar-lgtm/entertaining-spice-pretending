@@ -1,0 +1,15 @@
+> Welcome to Entertaining Spice Pretending!
+> 
+> -------------------
+> ROUND START
+> -------------------
+> 
+> Player 1:
+>     latest played card:
+>     cards played this round: 0
+>     hand cards: 5_c 3_w 3_w 3_w 8_w 8_w
+? P1 > 
+< quit how many
+> Please enter the correct number of parameters!
+? P1 > 
+< quiT

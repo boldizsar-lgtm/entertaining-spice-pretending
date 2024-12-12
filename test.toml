@@ -1,0 +1,81 @@
+[project_definition]
+binary_path = "./a4-csf"
+makefile_path = "."
+make_targets = ["all"]
+project_name = "a4-csf"
+global_timeout = 20
+
+################################################################################
+## public test cases
+##
+[[testcases]]
+name = "Valid Game"
+description = "A valid game without error messages"
+type = "OrdIO"
+io_file = "tests/01/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_01.txt"]
+
+[[testcases]]
+name = "Invalid File"
+description = "File without magic number"
+type = "OrdIO"
+io_file = "tests/02/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 3
+argv = ["configs/config_02.txt"]
+
+[[testcases]]
+name = "Basic quit"
+description = "Basic quit"
+type = "OrdIO"
+io_file = "tests/03/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_03.txt"]
+
+[[testcases]]
+name = "Basic Challenge"
+description = "Basic Challenge"
+type = "OrdIO"
+io_file = "tests/04/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_04.txt"]
+
+[[testcases]]
+name = "Basic Draw"
+description = "Draw until card deck is empty"
+type = "OrdIO"
+io_file = "tests/05/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_05.txt"]
+
+[[testcases]]
+name = "Draw After Challenge"
+description = "Tests if the correct amount of cards are being drawn after challenging the last card"
+type = "OrdIO"
+io_file = "tests/06/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_06.txt"]
+
+[[testcases]]
+name = "Playing on last card"
+description = "Playing on the last card is not allowed, need to challenge"
+type = "OrdIO"
+io_file = "tests/07/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_07.txt"]
+
+[[testcases]]
+name = "Bonus Points"
+description = "Player gets bonus points after losing all their cards"
+type = "OrdIO"
+io_file = "tests/08/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["configs/config_08.txt"]
