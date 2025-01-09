@@ -976,12 +976,7 @@ int main(int argc, char *argv[])
   if (commandLineParametersError(argc))
     return COMMAND_LINE_PARAMETERS_ERROR;
   
-  FILE *file = fopen(argv[1], "r+");
-  if (file == NULL)
-  {
-    perror("Warning: Results not written to file!\n");
-    return 0;
-  }
+  FILE *file = fopen(argv[1], "r");
 
   if (configFileError(file, argv[1]))
     return CONFIG_FILE_ERROR;
