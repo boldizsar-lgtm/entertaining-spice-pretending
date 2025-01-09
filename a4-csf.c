@@ -608,6 +608,7 @@ Player* challengeCard(Player* player, Player* opponent, Card real_played, Card l
 
   if (winner->hand_ == NULL)
   {
+    winner->score_ += 10;
     printf("Player %d gets 10 bonus points (last card).\n", winner->number_);
     for (int i = 0; i < HAND_SIZE; i++)
       drawCard(winner, draw_pile);
@@ -750,7 +751,8 @@ int isCorrectCommand(char** input, int parameter_count, Player player, Player op
       printf("Please enter a command you can use at the moment!\n");
     else if (!isValue(input[1]) && !isSpice(input[1]))
       printf("Please choose SPICE or VALUE!\n");
-    return CHALLENGE;
+    else
+      return CHALLENGE;
   }
 
   else if (isDraw(input[0]))
