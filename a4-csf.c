@@ -894,9 +894,8 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
 
 //-----------------------------------------------------------------------------
 ///
-void gameResults(Player player_one, Player player_two, FILE* file)
+void gameResults(Player player_one, Player player_two, char *filename)
 {
-  fseek(file, 0 , SEEK_END);
   Player winner;
   Player loser;
   if (player_one.score_ > player_two.score_) 
@@ -915,23 +914,38 @@ void gameResults(Player player_one, Player player_two, FILE* file)
     printf("Player %d: %d points\n\n", player_two.number_, player_two.score_);
     printf("Congratulations! Player %d wins the game!\n", player_one.number_);
     printf("Congratulations! Player %d wins the game!\n", player_two.number_);
-
-    fprintf(file, "\nPlayer %d: %d points\n", player_one.number_, player_one.score_);
-    fprintf(file, "Player %d: %d points\n\n", player_two.number_, player_two.score_);
-    fprintf(file, "Congratulations! Player %d wins the game!\n", player_one.number_);
-    fprintf(file, "Congratulations! Player %d wins the game!\n", player_two.number_);
   }
   else
   {
     printf("\nPlayer %d: %d points\n", winner.number_, winner.score_);
     printf("Player %d: %d points\n\n", loser.number_, loser.score_);
     printf("Congratulations! Player %d wins the game!\n", winner.number_);
-
-    fprintf(file, "\nPlayer %d: %d points\n", winner.number_, winner.score_);
-    fprintf(file, "Player %d: %d points\n\n", loser.number_, loser.score_);
-    fprintf(file, "Congratulations! Player %d wins the game!\n", winner.number_);
   }
     
+  FILE *file = fopen(filename, "r+");
+  if (file == NULL)
+  {
+    perror("Warning: Results not written to file!\n");
+  }
+  else
+  {
+    fseek(file, 0 , SEEK_END);
+    if (player_one.score_ == player_two.score_)
+    {
+      fprintf(file, "\nPlayer %d: %d points\n", player_one.number_, player_one.score_);
+      fprintf(file, "Player %d: %d points\n\n", player_two.number_, player_two.score_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n", player_one.number_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n", player_two.number_);
+    }
+    else
+    {
+      fprintf(file, "\nPlayer %d: %d points\n", winner.number_, winner.score_);
+      fprintf(file, "Player %d: %d points\n\n", loser.number_, loser.score_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n", winner.number_);
+    }
+    fclose(file);
+  }
+  
 }
 
 
@@ -958,12 +972,11 @@ void freeCards(Card* hand)
 
 //-----------------------------------------------------------------------------
 ///
-void freeAndCloseAll(Player player_one, Player player_two, Card* draw_pile, FILE* file)
+void freeAllCards(Player player_one, Player player_two, Card* draw_pile)
 {
   freeCards(player_one.hand_);
   freeCards(player_two.hand_);
   freeCards(draw_pile);
-  fclose(file);
 }
 
 //-----------------------------------------------------------------------------
@@ -996,22 +1009,26 @@ int main(int argc, char *argv[])
 
   if (!distributeCards(file, &player_one.hand_, &player_two.hand_, &draw_pile))
   {
-    freeAndCloseAll(player_one, player_two, draw_pile, file);
+    freeAllCards(player_one, player_two, draw_pile);
+    fclose(file);
     return MEMORY_ERROR;
   }
 
   int game_rounds = gameRounds(&player_one, &player_two, &draw_pile);
   if(game_rounds != 0)
   {
-    freeAndCloseAll(player_one, player_two, draw_pile, file);
+    freeAllCards(player_one, player_two, draw_pile);
+    fclose(file);
     if (game_rounds == MEMORY_ERROR)
       return MEMORY_ERROR;
     if (game_rounds == QUIT)
       return 0;
   }
 
-  gameResults(player_one, player_two, file);
+  fclose(file);
+  gameResults(player_one, player_two, argv[1]);
   
-  freeAndCloseAll(player_one, player_two, draw_pile, file);
+  freeAllCards(player_one, player_two, draw_pile);
+  fclose(file);
   return 0;
 }
