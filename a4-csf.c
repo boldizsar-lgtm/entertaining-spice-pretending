@@ -1029,6 +1029,5 @@ int main(int argc, char *argv[])
   gameResults(player_one, player_two, argv[1]);
   
   freeAllCards(player_one, player_two, draw_pile);
-  fclose(file);
   return 0;
 }
