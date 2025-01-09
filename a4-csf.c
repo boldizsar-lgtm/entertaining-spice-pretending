@@ -20,9 +20,9 @@
 typedef enum
 {
   COMMAND_LINE_PARAMETERS_ERROR = 1,
-  CONFIG_FILE_ERROR = 2,
-  MAGIC_NUM_ERROR = 3,
-  MEMORY_ERROR = 4
+  CONFIG_FILE_ERROR,
+  MAGIC_NUM_ERROR,
+  MEMORY_ERROR
 } Error;
 
 typedef enum
@@ -54,8 +54,8 @@ typedef struct _Player_
 /// @param argc the number of command line parameters entered when calling
 ///             this program
 ///
-/// @return true if there are not two command line parameters
-/// @return flase if there are exactly two command line parameters
+/// @return true if there are not exactly two command line parameters
+/// @return flase if there are two command line parameters
 /// 
 bool commandLineParametersError(int argc)
 {
@@ -71,13 +71,13 @@ bool commandLineParametersError(int argc)
 /// check if the file that was entered through command line parameters
 /// can be opened
 ///
-/// @param file
+/// @param file the file which dictates the cards used by the program
 /// @param filename the second command line paramenter
 ///
-/// @return true
-/// @return flase 
+/// @return true if the file could not be opened
+/// @return flase if the file could be opened
 /// 
-bool configFileError(FILE* file, char *filename)
+bool configFileError(FILE* file, char* filename)
 {
   if (file == NULL)
   {
@@ -90,14 +90,15 @@ bool configFileError(FILE* file, char *filename)
 //-----------------------------------------------------------------------------
 /// check if the file that was entered through command line parameters
 /// has the correct magic number at the beginning of the file
+/// which is supposed to be "ESP\n"
 ///
-/// @param file
+/// @param file the file which dictates the cards used by the program
 /// @param filename the second command line paramenter
 ///
-/// @return true
-/// @return flase 
+/// @return true if the magic number is wrong or not present
+/// @return flase if the magic number is correct
 /// 
-bool magicNumberError(FILE* file, char *filename)
+bool magicNumberError(FILE* file, char* filename)
 {
   char magic_number[MAGIC_NUM_SIZE + 1];
   int i = 0;
@@ -113,8 +114,8 @@ bool magicNumberError(FILE* file, char *filename)
     printf("Error: Invalid file: %s\n", filename);
     return true;
   }
-  fseek(file, -1, SEEK_CUR);
   // move one byte back to not skp the first number
+  fseek(file, -1, SEEK_CUR);
   return false;
 }
 
@@ -126,7 +127,7 @@ bool magicNumberError(FILE* file, char *filename)
 /// @return true if memory allocation failed
 /// @return flase if no error ocurred
 /// 
-bool AllocationError(void *ptr)
+bool AllocationError(void* ptr)
 {
   if (ptr == NULL)
     {
@@ -137,7 +138,15 @@ bool AllocationError(void *ptr)
 }
 
 //-----------------------------------------------------------------------------
+/// Add a card to a player's hand or the draw pile
 ///
+/// @param head the head of a linked list to which a card should be added
+/// @param value the value of the card to be added ranging from 1-10
+/// @param spice the spice of the card to be added "c", "p", or "w"
+///
+/// @return true if the card was successfully added
+/// @return flase if a memory allocation error occured
+/// 
 bool addCard (Card** head, int value, char spice)
 {
   Card* new_card = malloc(sizeof(Card));
@@ -169,13 +178,18 @@ bool addCard (Card** head, int value, char spice)
 /// alternating between which player gets the next card, then add the
 /// remainings cards to a draw pile
 ///
-/// @param player_one.hand_ a linked list made up of cards that this function
+/// @param file the file which dictates the cards used by the program
+/// @param player_one_hand a linked list made up of cards that this function
 ///                        fills
-/// @param player_two.hand_ a linked list made up of cards that this functions
+/// @param player_two_hand a linked list made up of cards that this functions
 ///                        fills
-/// @return false if a memorry error occurs
-/// @return true if the function finishes without issue
-bool distributeCards(FILE* file, Card** player_one_hand, Card** player_two_hand, Card** draw_pile)
+/// @param draw_pile a linked list made up of cards that this functions fills
+///
+/// @return true if the cards were successfully distributed
+/// @return false if a memory allocation error occured
+///
+bool distributeCards(FILE* file, Card** player_one_hand,
+                     Card** player_two_hand, Card** draw_pile)
 {
   int ch;
   char value[3];
@@ -291,6 +305,9 @@ Card* sortCards(Card* head) {
 }
 
 //-----------------------------------------------------------------------------
+/// print an entire linked list of cards
+///
+/// @param head the head of a linked list of cards
 ///
 void printCards(Card* head)
 {
@@ -304,22 +321,24 @@ void printCards(Card* head)
 }
 
 //-----------------------------------------------------------------------------
-/// distribute six cards to two players, starting with player one and
-/// alternating between which player gets the next card
+/// print the current player, the last card played, if any, and if it was that
+/// player's last hand card, print the number of cards played up to this point
+/// this round, and the current player's hand cards
 ///
-/// @param player_one.hand_ a linked list made up of cards that this function
-///                        fills
-/// @param player_two.hand_ a linked list made up of cards that this functions
-///                        fills
-/// @return false if a memorry error occurs
-/// @return true if the function finishes without issue
-void printTurn(Player player, Player opponent, int played_cards_count, Card last_played_as)
+/// @param player the current player
+/// @param opponent the opposing player
+/// @param played_cards_count the number of cards played this round
+/// @param last_played_as the last played card
+///
+void printTurn(Player player, Player opponent, int played_cards_count,
+               Card last_played_as)
 {
   printf("\nPlayer %d:\n", player.number_);
   if (last_played_as.value_ == 0)
      printf("    latest played card:");
   if (last_played_as.value_ != 0)
-    printf("    latest played card: %d_%c", last_played_as.value_, last_played_as.spice_);
+    printf("    latest played card: %d_%c",
+           last_played_as.value_, last_played_as.spice_);
   if (opponent.hand_ == NULL)
     printf(" LAST CARD");
   printf("\n    cards played this round: %d\n", played_cards_count);
@@ -328,13 +347,11 @@ void printTurn(Player player, Player opponent, int played_cards_count, Card last
 }
 
 //-----------------------------------------------------------------------------
-/// distribute six cards to two players, starting with player one and
-/// alternating between which player gets the next card
+/// free the 2 dimensional array allocated for the user input
 ///
-/// @param player_one.hand_ a linked list made up of cards that this function
-///                        fills
-/// @param player_two.hand_ a linked list made up of cards that this functions
-///                        fills
+/// @param input a 2D array filled with the input
+/// @param row_count the number of rows of the input, each word is saved in a
+///                  seperate row
 /// 
 void freeInput(char** input, int row_count)
 {
@@ -344,15 +361,17 @@ void freeInput(char** input, int row_count)
 }
 
 //-----------------------------------------------------------------------------
-/// distribute six cards to two players, starting with player one and
-/// alternating between which player gets the next card
+/// read and save the user input into a 2 dimensional array, with each word
+/// being saved in a seperate row
 ///
-/// @param player_one.hand_ a linked list made up of cards that this function
-///                        fills
-/// @param player_two.hand_ a linked list made up of cards that this functions
-///                        fills
+/// @param input a 2D array filled with the input
+/// @param row_count the number of rows of the input, each word is saved in a
+///                  seperate row
 /// 
-bool readUserInput(char ***input, int* row_count)
+/// @return true if the input was saved correctly
+/// @return false if a memory allocation error occured
+///
+bool readUserInput(char*** input, int* row_count)
 {
   *row_count = 0;
   int rows = INPUT_LENGTH;
@@ -393,7 +412,7 @@ bool readUserInput(char ***input, int* row_count)
       if (*row_count == rows)
       {
         rows *= 2;
-        char **temp = realloc (*input, rows * sizeof(char *));
+        char** temp = realloc (*input, rows * sizeof(char*));
         if (AllocationError(temp))
         {
           freeInput(*input, *row_count);
@@ -437,6 +456,10 @@ bool readUserInput(char ***input, int* row_count)
 }
 
 //-----------------------------------------------------------------------------
+/// remove a card from a player's hand
+///
+/// @param head the head of a linked list of cards
+/// @param target the card that should be removed
 ///
 void removeHandCard(Card** head, Card target)
 {
@@ -461,6 +484,9 @@ void removeHandCard(Card** head, Card target)
 }
 
 //-----------------------------------------------------------------------------
+/// remove the top card from the draw pile
+///
+/// @param head the head of a linked list of cards
 ///
 void removeDrawPileCard(Card** head)
 {
@@ -474,49 +500,49 @@ void removeDrawPileCard(Card** head)
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if quit was entered
+/// @return false if quit was not entered
 ///
-bool isQuit(char *string)
+bool isQuit(char* string)
 {
   return strcmp(string, "quit") == 0;
 }
 
 //-----------------------------------------------------------------------------
-/// check if the user entered 'quit'
+/// check if the user entered 'play'
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if play was entered
+/// @return false if play was not entered
 ///
-bool isPlay(char *string)
+bool isPlay(char* string)
 {
   return strcmp(string, "play") == 0;
 }
 
 //-----------------------------------------------------------------------------
-/// check if the user entered 'quit'
+/// check if the user entered 'challenge'
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if challenge was entered
+/// @return false if challenge was not entered
 ///
-bool isChallenge(char *string)
+bool isChallenge(char* string)
 {
   return strcmp(string, "challenge") == 0;
 }
 
 //-----------------------------------------------------------------------------
-/// check if the user entered 'quit'
+/// check if the user entered 'draw'
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if draw was entered
+/// @return false if draw was not entered
 ///
-bool isDraw(char *string)
+bool isDraw(char* string)
 {
   return strcmp(string, "draw") == 0;
 }
@@ -526,10 +552,10 @@ bool isDraw(char *string)
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if spice was entered
+/// @return false if spice was not entered
 ///
-bool isSpice(char *string)
+bool isSpice(char* string)
 {
   return strcmp(string, "spice") == 0;
 }
@@ -539,85 +565,21 @@ bool isSpice(char *string)
 ///
 /// @param string a string of characters
 ///
-/// @return true if quit was entered and the program should be terminated
-/// @return false if the program should continue
+/// @return true if value was entered
+/// @return false if value was not entered
 ///
-bool isValue(char *string)
+bool isValue(char* string)
 {
   return strcmp(string, "value") == 0;
 }
 
 //-----------------------------------------------------------------------------
+/// convert the user's input into the value of a card.
 ///
-void drawCard(Player* player, Card** draw_pile)
-{
-  if (*draw_pile == NULL)
-    return;
-
-  addCard(&player->hand_, (*draw_pile)->value_, (*draw_pile)->spice_);
-  removeDrawPileCard(draw_pile);
-}
-
-//-----------------------------------------------------------------------------
+/// @param parameter one of the parameters the user input when entering the
+///                  play command
 ///
-Player* challengeCard(Player* player, Player* opponent, Card real_played, Card last_played_as, Card** draw_pile, char** input, int played_cards_count)
-{
-  Player* winner;
-  Player* loser;
-  if (isValue(input[1]))
-  {
-    if (real_played.value_ == last_played_as.value_)
-    {
-      winner = opponent;
-      loser = player;
-      printf("Challenge failed: %d_%c's value matches the real card %d_%c.\n",
-             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
-    }
-    else
-    {
-      winner = player;
-      loser = opponent;
-      printf("Challenge successful: %d_%c's value does not match the real card %d_%c.\n",
-             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
-    }
-  }
-
-  if (isSpice(input[1]))
-  {
-    if (real_played.spice_ == last_played_as.spice_)
-    {
-      winner = opponent;
-      loser = player;
-      printf("Challenge failed: %d_%c's spice matches the real card %d_%c.\n",
-             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
-    }
-    else
-    {
-      winner = player;
-      loser = opponent;
-      printf("Challenge successful: %d_%c's spice does not match the real card %d_%c.\n",
-             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
-    }
-  }
-
-  winner->score_ += played_cards_count;
-  printf("Player %d gets %d points.\n", winner->number_, played_cards_count);
-
-  drawCard(loser, draw_pile);
-  drawCard(loser, draw_pile);
-
-  if (winner->hand_ == NULL)
-  {
-    winner->score_ += 10;
-    printf("Player %d gets 10 bonus points (last card).\n", winner->number_);
-    for (int i = 0; i < HAND_SIZE; i++)
-      drawCard(winner, draw_pile);
-  }
-
-  return winner;
-}
-
-//-----------------------------------------------------------------------------
+/// @return int the value of the card that was input
 ///
 int getCardValue(char* parameter)
 {
@@ -632,6 +594,12 @@ int getCardValue(char* parameter)
 }
 
 //-----------------------------------------------------------------------------
+/// convert the user's input into the spice of a card.
+///
+/// @param parameter one of the parameters the user input when entering the
+///                  play command
+///
+/// @return char the spice of the card that was input
 ///
 char getCardSpice(char* parameter)
 {
@@ -640,21 +608,6 @@ char getCardSpice(char* parameter)
     return parameter[3];
   }
   return parameter[2];
-}
-
-//-----------------------------------------------------------------------------
-///
-void playCard(char** input, Player* player, int *played_cards_count, Card* real_played, Card* last_played_as)
-{
-  real_played->value_ = getCardValue(input[1]);
-  real_played->spice_ = getCardSpice(input[1]);
-  
-  last_played_as->value_ = getCardValue(input[2]);
-  last_played_as->spice_ = getCardSpice(input[2]);
-
-  removeHandCard(&player->hand_, *real_played);
-
-  (*played_cards_count)++;
 }
 
 //-----------------------------------------------------------------------------
@@ -689,7 +642,8 @@ bool wrongPlayFormat(char** input)
       return true;
   if (real_played_value < 10 && input[1][1] != '_')
       return true;
-  if (real_played_spice != 'c' && real_played_spice != 'w' && real_played_spice != 'p')
+  if (real_played_spice != 'c' && real_played_spice != 'w'
+      && real_played_spice != 'p')
     return true;
   
   if (played_as_value < 1 || played_as_value > 10)
@@ -698,7 +652,8 @@ bool wrongPlayFormat(char** input)
     return true;
   if (played_as_value < 10 && input[2][1] != '_')
       return true;
-  if (played_as_spice != 'c' && played_as_spice != 'w' && played_as_spice != 'p')
+  if (played_as_spice != 'c' && played_as_spice != 'w'
+      && played_as_spice != 'p')
     return true;
 
   return false;
@@ -706,7 +661,9 @@ bool wrongPlayFormat(char** input)
 
 //-----------------------------------------------------------------------------
 ///
-int isCorrectCommand(char** input, int parameter_count, Player player, Player opponent, Card last_played_as, int played_cards_count, bool is_challengeable)
+int isCorrectCommand(char** input, int parameter_count, Player player,
+                     Player opponent, Card last_played_as,
+                     int played_cards_count, bool is_challengeable)
 {
   Card current_played_as;
   if (parameter_count == 3)
@@ -733,11 +690,14 @@ int isCorrectCommand(char** input, int parameter_count, Player player, Player op
      printf("Please enter the cards in the correct format!\n");
     else if (nonHandCardPlayInput(player.hand_, input))
       printf("Please enter a card in your hand cards!\n");
-    else if ((last_played_as.value_ == 0 || last_played_as.value_ == 10) && current_played_as.value_  > 3)
+    else if ((last_played_as.value_ == 0 || last_played_as.value_ == 10)
+             && current_played_as.value_  > 3)
       printf("Please enter a valid VALUE!\n");
-    else if ((last_played_as.value_ > 0 && last_played_as.value_ < 10) && current_played_as.value_  < last_played_as.value_)
+    else if ((last_played_as.value_ > 0 && last_played_as.value_ < 10)
+             && current_played_as.value_  < last_played_as.value_)
       printf("Please enter a valid VALUE!\n");
-    else if (played_cards_count > 0 && current_played_as.spice_ != last_played_as.spice_)
+    else if (current_played_as.spice_ != last_played_as.spice_
+             && played_cards_count > 0)
       printf("Please enter a valid SPICE!\n");
     else
       return PLAY;
@@ -772,6 +732,132 @@ int isCorrectCommand(char** input, int parameter_count, Player player, Player op
 }
 
 //-----------------------------------------------------------------------------
+/// a player plays a card from their hand and tells the truth or lies
+/// about the value and spice of their card. the first parameter of the user's
+/// input is the card that is removed from the player's hand.
+/// the second parameter of the input is what the card is played as.
+///
+/// @param
+/// @param
+/// @param
+/// @param
+/// @param
+///
+void playCard(char** input, Player* player, int* played_cards_count,
+              Card* real_played, Card* last_played_as)
+{
+  real_played->value_ = getCardValue(input[1]);
+  real_played->spice_ = getCardSpice(input[1]);
+  
+  last_played_as->value_ = getCardValue(input[2]);
+  last_played_as->spice_ = getCardSpice(input[2]);
+
+  removeHandCard(&player->hand_, *real_played);
+
+  (*played_cards_count)++;
+}
+
+//-----------------------------------------------------------------------------
+/// a player draws a card from the draw pile, add that card to the player's
+/// hand and remove it from the draw pile
+///
+/// @param player a struct with player's hands, number, and score
+/// @param draw_pile a linked list of cards
+///
+/// @return if the draw pile is empty return before it is accessed
+///
+void drawCard(Player* player, Card** draw_pile)
+{
+  if (*draw_pile == NULL)
+    return;
+
+  addCard(&player->hand_, (*draw_pile)->value_, (*draw_pile)->spice_);
+  removeDrawPileCard(draw_pile);
+}
+
+//-----------------------------------------------------------------------------
+/// a player challenges the previously played card from the opponent, if the
+/// opponent lied and the last played card does not match the one that got
+/// removed from their hand the opponent loses. Otherwise the player loses.
+///
+/// @param
+/// @param
+/// @param
+/// @param
+/// @param
+/// @param
+/// @param
+///
+/// @return Player the player who won the challenge
+///
+Player* challengeCard(Player* player, Player* opponent, Card real_played,
+                      Card last_played_as, Card** draw_pile, char** input,
+                      int played_cards_count)
+{
+  Player* winner;
+  Player* loser;
+  if (isValue(input[1]))
+  {
+    if (real_played.value_ == last_played_as.value_)
+    {
+      winner = opponent;
+      loser = player;
+      printf("Challenge failed: %d_%c's value matches the real card %d_%c.\n",
+             last_played_as.value_, last_played_as.spice_,
+             real_played.value_, real_played.spice_);
+    }
+    else
+    {
+      winner = player;
+      loser = opponent;
+      printf("Challenge successful: %d_%c's value "
+             "does not match the real card %d_%c.\n",
+             last_played_as.value_, last_played_as.spice_,
+             real_played.value_, real_played.spice_);
+    }
+  }
+
+  if (isSpice(input[1]))
+  {
+    if (real_played.spice_ == last_played_as.spice_)
+    {
+      winner = opponent;
+      loser = player;
+      printf("Challenge failed: %d_%c's spice matches the real card %d_%c.\n",
+             last_played_as.value_, last_played_as.spice_,
+             real_played.value_, real_played.spice_);
+    }
+    else
+    {
+      winner = player;
+      loser = opponent;
+      printf("Challenge successful: %d_%c's spice "
+             "does not match the real card %d_%c.\n",
+             last_played_as.value_, last_played_as.spice_,
+             real_played.value_, real_played.spice_);
+    }
+  }
+
+  winner->score_ += played_cards_count;
+  printf("Player %d gets %d points.\n", winner->number_, played_cards_count);
+
+  drawCard(loser, draw_pile);
+  drawCard(loser, draw_pile);
+
+  if (winner->hand_ == NULL)
+  {
+    winner->score_ += 10;
+    printf("Player %d gets 10 bonus points (last card).\n", winner->number_);
+    for (int i = 0; i < HAND_SIZE; i++)
+      drawCard(winner, draw_pile);
+  }
+
+  return winner;
+}
+
+//-----------------------------------------------------------------------------
+/// switch turns between the current player and the opposing Player
+///
 ///
 void switchPlayerTurn(Player** current_player, Player** opposing_player)
 {
@@ -789,10 +875,11 @@ void switchPlayerTurn(Player** current_player, Player** opposing_player)
 /// @param player_two.hand_ a linked list made up of cards that this functions
 ///                        fills
 /// 
-int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
+int gameRounds(Player* player_one, Player* player_two, Card** draw_pile)
 {
   Player* current_player = player_one;
   Player* opposing_player = player_two;
+  Player* winner;
 
   while (*draw_pile != NULL)
   {
@@ -806,7 +893,8 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
     while (*draw_pile != NULL)
     {
       current_player->hand_ = sortCards(current_player->hand_);
-      printTurn(*current_player, *opposing_player, played_cards_count, last_played_as);
+      printTurn(*current_player, *opposing_player, played_cards_count,
+                last_played_as);
       
       char** input = NULL;
       int parameter_count = 0;
@@ -821,7 +909,9 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
           return MEMORY_ERROR;
         }
       
-        command = isCorrectCommand(input, parameter_count, *current_player, *opposing_player, last_played_as, played_cards_count, is_challengeable);
+        command = isCorrectCommand(input, parameter_count, *current_player,
+                                   *opposing_player, last_played_as,
+                                   played_cards_count, is_challengeable);
         if (command == QUIT)
         {
           freeInput(input, parameter_count);
@@ -829,13 +919,16 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
         }
         if (command == PLAY)
         {
-          playCard(input, current_player, &played_cards_count, &last_real_played, &last_played_as);
+          playCard(input, current_player, &played_cards_count,
+                   &last_real_played, &last_played_as);
           switchPlayerTurn(&current_player, &opposing_player);
           is_challengeable = true;
         }
         if (command == CHALLENGE)
         {
-          Player* winner = challengeCard(current_player, opposing_player, last_real_played, last_played_as, draw_pile, input, played_cards_count);
+          winner = challengeCard(current_player, opposing_player,
+                                 last_real_played, last_played_as, draw_pile,
+                                 input, played_cards_count);
           if (winner == opposing_player)
             break;
           if (winner == current_player)
@@ -864,8 +957,14 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
 }
 
 //-----------------------------------------------------------------------------
+/// print the results of the game, and if possible write it into the config
+/// file
 ///
-void gameResults(Player player_one, Player player_two, char *filename)
+/// @param player_one a struct with player one's hands, number, and score
+/// @param player_two a struct with player two's hands, number, and score
+/// @param filename the second command line paramenter
+///
+void gameResults(Player player_one, Player player_two, char* filename)
 {
   Player winner;
   Player loser;
@@ -893,7 +992,7 @@ void gameResults(Player player_one, Player player_two, char *filename)
     printf("Congratulations! Player %d wins the game!\n", winner.number_);
   }
     
-  FILE *file = fopen(filename, "r+");
+  FILE* file = fopen(filename, "r+");
   if (file == NULL)
   {
     perror("Warning: Results not written to file!\n");
@@ -903,16 +1002,23 @@ void gameResults(Player player_one, Player player_two, char *filename)
     fseek(file, 0 , SEEK_END);
     if (player_one.score_ == player_two.score_)
     {
-      fprintf(file, "\nPlayer %d: %d points\n", player_one.number_, player_one.score_);
-      fprintf(file, "Player %d: %d points\n\n", player_two.number_, player_two.score_);
-      fprintf(file, "Congratulations! Player %d wins the game!\n", player_one.number_);
-      fprintf(file, "Congratulations! Player %d wins the game!\n", player_two.number_);
+      fprintf(file, "\nPlayer %d: %d points\n",
+              player_one.number_, player_one.score_);
+      fprintf(file, "Player %d: %d points\n\n",
+              player_two.number_, player_two.score_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n",
+              player_one.number_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n",
+              player_two.number_);
     }
     else
     {
-      fprintf(file, "\nPlayer %d: %d points\n", winner.number_, winner.score_);
-      fprintf(file, "Player %d: %d points\n\n", loser.number_, loser.score_);
-      fprintf(file, "Congratulations! Player %d wins the game!\n", winner.number_);
+      fprintf(file, "\nPlayer %d: %d points\n",
+              winner.number_, winner.score_);
+      fprintf(file, "Player %d: %d points\n\n",
+              loser.number_, loser.score_);
+      fprintf(file, "Congratulations! Player %d wins the game!\n",
+              winner.number_);
     }
     fclose(file);
   }
@@ -921,27 +1027,29 @@ void gameResults(Player player_one, Player player_two, char *filename)
 
 
 //-----------------------------------------------------------------------------
-/// distribute six cards to two players, starting with player one and
-/// alternating between which player gets the next card
+/// free the allocated memory for a linked list of cards
 ///
-/// @param player_one.hand_ a linked list made up of cards that this function
-///                        fills
-/// @param player_two.hand_ a linked list made up of cards that this functions
-///                        fills
+/// @param head the head of a linked list of cards
 /// 
-void freeCards(Card* hand)
+void freeCards(Card* head)
 {
-  Card* current = hand;
+  Card* current = head;
   while (current != NULL)
   {
     Card* next = current->next_;
     free(current);
     current = next;
   }
-  hand = NULL;
+  head = NULL;
 }
 
 //-----------------------------------------------------------------------------
+/// free the allocated memory for a player one's hand, player two's hand and
+/// the draw pile
+///
+/// @param player_one a struct with player one's hands, number, and score
+/// @param player_two a struct with player two's hands, number, and score
+/// @param draw_pile a linked list of cards
 ///
 void freeAllCards(Player player_one, Player player_two, Card* draw_pile)
 {
@@ -953,14 +1061,25 @@ void freeAllCards(Player player_one, Player player_two, Card* draw_pile)
 //-----------------------------------------------------------------------------
 /// The actual main function of the program!
 /// 
-/// @return int
+/// @param argc number of command line parameters
+/// @param argv string of command line parameters
+///
+/// @return 0 if quit was entered as a player's input or if the program 
+///           finishes as intended
+/// @return (1) COMMAND_LINE_PARAMETERS_ERROR if the wrong number of command
+///             line parameters were entered
+/// @return (2) CONFIG_FILE_ERROR if the config file can't be opened for
+///             reading
+/// @return (3) MAGIC_NUM_ERROR if the config file does not have the right
+///             magic number at the start
+/// @return (4) MEMORY_ERROR if a memory allocation error occurs
 /// 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   if (commandLineParametersError(argc))
     return COMMAND_LINE_PARAMETERS_ERROR;
   
-  FILE *file = fopen(argv[1], "r");
+  FILE* file = fopen(argv[1], "r");
 
   if (configFileError(file, argv[1]))
     return CONFIG_FILE_ERROR;
