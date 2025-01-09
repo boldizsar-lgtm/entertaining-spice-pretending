@@ -313,13 +313,13 @@ void printCards(Card* head)
 ///                        fills
 /// @return false if a memorry error occurs
 /// @return true if the function finishes without issue
-void printTurn(Player player, Player opponent, int played_cards_count, Card played_as)
+void printTurn(Player player, Player opponent, int played_cards_count, Card last_played_as)
 {
   printf("\nPlayer %d:\n", player.number_);
-  if (played_as.value_ == 0)
+  if (last_played_as.value_ == 0)
      printf("    latest played card:");
-  if (played_as.value_ != 0)
-    printf("    latest played card: %d_%c", played_as.value_, played_as.spice_);
+  if (last_played_as.value_ != 0)
+    printf("    latest played card: %d_%c", last_played_as.value_, last_played_as.spice_);
   if (opponent.hand_ == NULL)
     printf(" LAST CARD");
   printf("\n    cards played this round: %d\n", played_cards_count);
@@ -560,43 +560,43 @@ void drawCard(Player* player, Card** draw_pile)
 
 //-----------------------------------------------------------------------------
 ///
-Player* challengeCard(Player* player, Player* opponent, Card real_played, Card played_as, Card** draw_pile, char** input, int played_cards_count)
+Player* challengeCard(Player* player, Player* opponent, Card real_played, Card last_played_as, Card** draw_pile, char** input, int played_cards_count)
 {
   Player* winner;
   Player* loser;
   if (isValue(input[1]))
   {
-    if (real_played.value_ == played_as.value_)
+    if (real_played.value_ == last_played_as.value_)
     {
       winner = opponent;
       loser = player;
       printf("Challenge failed: %d_%c's value matches the real card %d_%c.\n",
-             played_as.value_, played_as.spice_, real_played.value_, real_played.spice_);
+             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
     }
     else
     {
       winner = player;
       loser = opponent;
       printf("Challenge successful: %d_%c's value does not match the real card %d_%c.\n",
-             played_as.value_, played_as.spice_, real_played.value_, real_played.spice_);
+             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
     }
   }
 
   if (isSpice(input[1]))
   {
-    if (real_played.spice_ == played_as.spice_)
+    if (real_played.spice_ == last_played_as.spice_)
     {
       winner = opponent;
       loser = player;
       printf("Challenge failed: %d_%c's spice matches the real card %d_%c.\n",
-             played_as.value_, played_as.spice_, real_played.value_, real_played.spice_);
+             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
     }
     else
     {
       winner = player;
       loser = opponent;
       printf("Challenge successful: %d_%c's spice does not match the real card %d_%c.\n",
-             played_as.value_, played_as.spice_, real_played.value_, real_played.spice_);
+             last_played_as.value_, last_played_as.spice_, real_played.value_, real_played.spice_);
     }
   }
 
@@ -643,13 +643,13 @@ char getCardSpice(char* parameter)
 
 //-----------------------------------------------------------------------------
 ///
-void playCard(char** input, Player* player, int *played_cards_count, Card* real_played, Card* played_as)
+void playCard(char** input, Player* player, int *played_cards_count, Card* real_played, Card* last_played_as)
 {
   real_played->value_ = getCardValue(input[1]);
   real_played->spice_ = getCardSpice(input[1]);
   
-  played_as->value_ = getCardValue(input[2]);
-  played_as->spice_ = getCardSpice(input[2]);
+  last_played_as->value_ = getCardValue(input[2]);
+  last_played_as->spice_ = getCardSpice(input[2]);
 
   removeHandCard(&player->hand_, *real_played);
 
@@ -705,16 +705,14 @@ bool wrongPlayFormat(char** input)
 
 //-----------------------------------------------------------------------------
 ///
-int isCorrectCommand(char** input, int parameter_count, Player player, Player opponent, Card played_as, int played_cards_count, bool is_challengeable)
+int isCorrectCommand(char** input, int parameter_count, Player player, Player opponent, Card last_played_as, int played_cards_count, bool is_challengeable)
 {
-  int real_card_value = 0;
-  char real_card_spice = '\0';
+  Card current_played_as;
   if (parameter_count == 3)
   {
-    real_card_value = getCardValue(input[2]);
-    real_card_spice = getCardSpice(input[2]);
+    current_played_as.value_ = getCardValue(input[2]);
+    current_played_as.spice_ = getCardSpice(input[2]);
   }
-
   
   if (isQuit(input[0]))
   {
@@ -727,49 +725,20 @@ int isCorrectCommand(char** input, int parameter_count, Player player, Player op
   else if (isPlay(input[0]))
   {
     if (parameter_count != 3)
-    {
       printf("Please enter the correct number of parameters!\n");
-      return 0;
-    }
     else if (opponent.hand_ == NULL)
-    {
       printf("Please enter a command you can use at the moment!\n");
-      return 0;
-    }
     else if (wrongPlayFormat(input))
-    {
      printf("Please enter the cards in the correct format!\n");
-     return 0;
-    }
     else if (nonHandCardPlayInput(player.hand_, input))
-    {
       printf("Please enter a card in your hand cards!\n");
-      return 0;
-    }
-    else if (played_as.value_ == 0 || played_as.value_ == 10)
-    {
-      if (real_card_value > 3)
-      {
-        printf("Please enter a valid VALUE!\n");
-        return 0;
-      }
-    }
-    else if (played_as.value_ > 0 && played_as.value_ < 10)
-    {
-      if (real_card_value < played_as.value_)
-      {
-        printf("Please enter a valid VALUE!\n");
-        return 0;
-      }
-    }
-    else if (played_cards_count > 0)
-    {
-      if (real_card_spice != played_as.spice_)
-      {
-        printf("Please enter a valid SPICE!\n");
-        return 0;
-      }
-    }
+    else if ((last_played_as.value_ == 0 || last_played_as.value_ == 10) && current_played_as.value_  > 3)
+      printf("Please enter a valid VALUE!\n");
+    else if ((last_played_as.value_ > 0 && last_played_as.value_ < 10) && current_played_as.value_  < last_played_as.value_)
+      printf("Please enter a valid VALUE!\n");
+    else if (played_cards_count > 0 && current_played_as.spice_ != last_played_as.spice_)
+      printf("Please enter a valid SPICE!\n");
+    else
       return PLAY;
   }
 
@@ -827,15 +796,15 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
   {
     printf("\n-------------------\nROUND START\n-------------------\n");
     int played_cards_count = 0;
-    Card played_as = { .value_ = 0, .spice_ = '\0', .next_ = NULL };
-    Card real_played = { .value_ = 0, .spice_ = '\0', .next_ = NULL };
+    Card last_played_as = { .value_ = 0, .spice_ = '\0', .next_ = NULL };
+    Card last_real_played = { .value_ = 0, .spice_ = '\0', .next_ = NULL };
     bool is_challengeable = false;
     int command = 0;
     
     while (*draw_pile != NULL)
     {
       current_player->hand_ = sortCards(current_player->hand_);
-      printTurn(*current_player, *opposing_player, played_cards_count, played_as);
+      printTurn(*current_player, *opposing_player, played_cards_count, last_played_as);
       
       char** input = NULL;
       int parameter_count = 0;
@@ -850,7 +819,7 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
           return MEMORY_ERROR;
         }
       
-        command = isCorrectCommand(input, parameter_count, *current_player, *opposing_player, played_as, played_cards_count, is_challengeable);
+        command = isCorrectCommand(input, parameter_count, *current_player, *opposing_player, last_played_as, played_cards_count, is_challengeable);
         if (command == QUIT)
         {
           freeInput(input, parameter_count);
@@ -858,13 +827,13 @@ int gameRounds (Player* player_one, Player* player_two, Card** draw_pile)
         }
         if (command == PLAY)
         {
-          playCard(input, current_player, &played_cards_count, &real_played, &played_as);
+          playCard(input, current_player, &played_cards_count, &last_real_played, &last_played_as);
           switchPlayerTurn(&current_player, &opposing_player);
           is_challengeable = true;
         }
         if (command == CHALLENGE)
         {
-          Player* winner = challengeCard(current_player, opposing_player, real_played, played_as, draw_pile, input, played_cards_count);
+          Player* winner = challengeCard(current_player, opposing_player, last_real_played, last_played_as, draw_pile, input, played_cards_count);
           if (winner == opposing_player)
             break;
           if (winner == current_player)
