@@ -400,9 +400,8 @@ bool readUserInput(char*** input, int* row_count)
         (*input)[*row_count][col_count] = '\0';
         (*row_count)++;
       }
-      else if (*row_count > 0)
+      else 
         free((*input)[*row_count]);
-        
       break;
     }
     if (ch == ' ' && col_count > 0)
