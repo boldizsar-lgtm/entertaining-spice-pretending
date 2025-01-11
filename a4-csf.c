@@ -393,15 +393,21 @@ bool readUserInput(char*** input, int* row_count)
   while (true)
   {
     ch = getchar();
-    if (ch == '\n' || ch == EOF)
+    if ((ch == '\n' || ch == EOF) && col_count > 0)
     {
-      if (col_count > 0)
+      (*input)[*row_count][col_count] = '\0';
+      (*row_count)++;
+      break;
+    }
+    if ((ch == '\n' || ch == EOF) && col_count == 0)
+    {
+      if (*row_count > 0)
+        free((*input)[*row_count]);
+      if (*row_count == 0)
       {
         (*input)[*row_count][col_count] = '\0';
         (*row_count)++;
       }
-      else 
-        free((*input)[*row_count]);
       break;
     }
     if (ch == ' ' && col_count > 0)
