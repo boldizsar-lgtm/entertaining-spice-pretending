@@ -20,17 +20,17 @@
 typedef enum
 {
   COMMAND_LINE_PARAMETERS_ERROR = 1,
-  CONFIG_FILE_ERROR,
-  MAGIC_NUM_ERROR,
-  MEMORY_ERROR
+  CONFIG_FILE_ERROR = 2,
+  MAGIC_NUM_ERROR = 3,
+  MEMORY_ERROR = 4
 } Error;
 
 typedef enum
 {
   QUIT = 5,
-  PLAY,
-  CHALLENGE,
-  DRAW
+  PLAY = 6,
+  CHALLENGE = 7,
+  DRAW = 8
 } Command;
 
 typedef struct _Card_
@@ -400,6 +400,8 @@ bool readUserInput(char*** input, int* row_count)
         (*input)[*row_count][col_count] = '\0';
         (*row_count)++;
       }
+      else
+        free((*input)[*row_count]);
       break;
     }
     if (ch == ' ' && col_count > 0)
@@ -418,7 +420,6 @@ bool readUserInput(char*** input, int* row_count)
           freeInput(*input, *row_count);
           return false;
         }
-          
         *input = temp;
         temp = NULL;
       }
@@ -445,7 +446,6 @@ bool readUserInput(char*** input, int* row_count)
           freeInput(*input, *row_count);
           return false;
         }
-        
         (*input)[*row_count] = temp;
         temp = NULL;
       }
@@ -1080,7 +1080,6 @@ int main(int argc, char* argv[])
     return COMMAND_LINE_PARAMETERS_ERROR;
   
   FILE* file = fopen(argv[1], "r");
-
   if (configFileError(file, argv[1]))
     return CONFIG_FILE_ERROR;
   
@@ -1094,7 +1093,6 @@ int main(int argc, char* argv[])
 
   Player player_one = {1, 0, NULL};
   Player player_two = {2, 0, NULL};
-
   Card* draw_pile = NULL;
 
   if (!distributeCards(file, &player_one.hand_, &player_two.hand_, &draw_pile))
