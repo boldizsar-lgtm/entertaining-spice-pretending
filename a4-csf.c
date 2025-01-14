@@ -1139,7 +1139,7 @@ int main(int argc, char *argv[])
     return MAGIC_NUM_ERROR;
   }
 
-  //printf("Welcome to Entertaining Spice Pretending!\n");
+  printf("Welcome to Entertaining Spice Pretending!\n");
 
   Player player_one = {1, 0, NULL};
   Player player_two = {2, 0, NULL};
