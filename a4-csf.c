@@ -1058,7 +1058,7 @@ void gameResults(Player player_one, Player player_two, char *filename)
   FILE *file = fopen(filename, "r+");
   if (file == NULL)
   {
-    perror("\nWarning: Results not written to file!\n");
+    printf("Warning: Results not written to file!\n");
   }
   else
   {
