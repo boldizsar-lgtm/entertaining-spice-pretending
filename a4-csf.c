@@ -255,8 +255,16 @@ bool distributeCards(FILE *file, Card **player_one_hand,
   return true;
 }
 
+// The following four sort function parts were created with the help of ChatGPT
 //-----------------------------------------------------------------------------
+/// split a linked list into two to sort them easier
 ///
+/// @param source the original head of the linked list that should be split
+/// @param frontRef the new head of a new linked list that used to be the
+///        first half of the previous list
+/// @param backRed the new head of a new linked list that used to be the
+///        second half of the previous list
+/// 
 void splitList(Card *source, Card **frontRef, Card **backRef)
 {
   Card *slow = source;
@@ -278,6 +286,16 @@ void splitList(Card *source, Card **frontRef, Card **backRef)
 }
 
 //-----------------------------------------------------------------------------
+/// compare the spice of two cards, if they are the same compare their value
+/// sort by spice in the order first chili, then pepper, then wasabi,
+/// within each spice, the cards are sorted by ascending value.
+///
+/// @param a a Card struct to be compared
+/// @param b a Card struct to be compared
+///
+/// @return <0 if a should be before b
+/// @return 0 if the two cards are the same
+/// @return >0 if b should be before a
 ///
 int compareCards(const Card *a, const Card *b)
 {
@@ -292,6 +310,12 @@ int compareCards(const Card *a, const Card *b)
 }
 
 //-----------------------------------------------------------------------------
+/// merge two previously split lists that were sorted into one
+///
+/// @param left a previously split linked list of cards
+/// @param right a previously split linked list of cards
+///
+/// @return a sorted linked list of cards
 ///
 Card *mergeSortedLists(Card *left, Card *right)
 {
@@ -311,6 +335,13 @@ Card *mergeSortedLists(Card *left, Card *right)
 }
 
 //-----------------------------------------------------------------------------
+/// sort a linked list of cards by using merge sort,
+/// sort by spice in the order first chili, then pepper, then wasabi,
+/// within each spice, the cards are sorted by ascending value.
+///
+/// @param head the head of a linked list of cards
+///
+/// @return a sorted linked list of cards
 ///
 Card *sortCards(Card *head)
 {
@@ -327,6 +358,7 @@ Card *sortCards(Card *head)
 
   return mergeSortedLists(left, right);
 }
+// end of ChatGPT's help
 
 //-----------------------------------------------------------------------------
 /// set the GameStatistics struct back to its original state
