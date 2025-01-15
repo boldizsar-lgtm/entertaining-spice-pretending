@@ -70,7 +70,7 @@ typedef struct _GameStatistics_
 /// check if the correct number of command line parameters were entered
 ///
 /// @param argc the number of command line parameters entered when calling
-///             this program
+///        his program
 ///
 /// @return true if there are not exactly two command line parameters
 /// @return flase if there are two command line parameters
@@ -198,9 +198,9 @@ bool addCard (Card **head, int value, char spice)
 ///
 /// @param file the file which dictates the cards used by the program
 /// @param player_one_hand a linked list made up of cards that this function
-///                        fills
+///        fills
 /// @param player_two_hand a linked list made up of cards that this functions
-///                        fills
+///        fills
 /// @param draw_pile a linked list made up of cards that this functions fills
 ///
 /// @return true if the cards were successfully distributed
@@ -333,7 +333,7 @@ Card *sortCards(Card *head)
 /// the cards are empty, no cards have been played, challenge is not possible
 ///
 /// @param game a struct made up of the last played card (real and bluff),
-///             the number of played cards, and more
+///        the number of played cards, and more
 ///
 void resetGameStatistics(GameStatistics *game)
 {
@@ -369,7 +369,7 @@ void printCards(Card *head)
 /// @param player the current player
 /// @param opponent the opposing player
 /// @param game a struct made up of the last played card (real and bluff),
-///             the number of played cards, and more
+///        the number of played cards, and more
 ///
 void printTurn(Player player, Player opponent, GameStatistics game)
 {
@@ -391,7 +391,7 @@ void printTurn(Player player, Player opponent, GameStatistics game)
 ///
 /// @param input a 2D array filled with the input
 /// @param word_count the number of rows of the input, each word is saved in a
-///                  seperate row
+///        seperate row
 /// 
 void freeInput(char **input, int word_count)
 {
@@ -401,12 +401,85 @@ void freeInput(char **input, int word_count)
 }
 
 //-----------------------------------------------------------------------------
+/// free the 2 dimensional array allocated for the user input
+///
+/// @param input a 2D array filled with the input
+/// @param word_count the number of rows of the input, each word is saved in a
+///        seperate row
+/// @param max_words the current maximum number of words the 1st dimension
+///        of the array can store
+/// @param max_chars the current maximum number of characters the 2nd
+///        dimension of the array can store
+///
+/// @return true if the memory allocation was successful
+/// @return false if a memory allocation error occured
+/// 
+bool allocateWordMemory(char ***input, int word_count, int *max_words,
+                         int max_chars)
+{
+  if (word_count == *max_words)
+  {
+    *max_words *= 2;
+    char **temp = realloc (*input, *max_words * sizeof(char*));
+    if (AllocationError(temp))
+    {
+      freeInput(*input, word_count);
+      return false;
+    }
+    *input = temp;
+    temp = NULL;
+  }
+  
+  (*input)[word_count] = malloc(max_chars * sizeof(char));
+  if (AllocationError((*input)[word_count]))
+  {
+    freeInput(*input, word_count);
+    return false;
+  }
+  
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+/// free the 2 dimensional array allocated for the user input
+///
+/// @param input a 2D array filled with the input
+/// @param word_count the number of rows of the input, each word is saved in a
+///        seperate row
+/// @param char_count the number of collumns of the input, each character is
+///        saved in a seperate collumn
+/// @param max_chars the current maximum number of characters the 2nd
+///        dimension of the array can store
+///
+/// @return true if the memory allocation was successful
+/// @return false if a memory allocation error occured
+/// 
+bool reallocCharMemory(char ***input, int word_count, int char_count,
+                       int *max_chars)
+{
+  if (char_count == *max_chars)
+  {
+    *max_chars *= 2;
+    char *temp = realloc ((*input)[word_count], *max_chars * sizeof(char));
+    if (AllocationError(temp))
+    {
+      freeInput(*input, word_count);
+      return false;
+    }
+    (*input)[word_count] = temp;
+    temp = NULL;
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
 /// read and save the user input into a 2 dimensional array, with each word
 /// being saved in a seperate row
 ///
 /// @param input a 2D array filled with the input
 /// @param word_count the number of rows of the input, each word is saved in a
-///                  seperate row
+///        seperate row
 /// 
 /// @return true if the input was saved correctly
 /// @return false if a memory allocation error occured
@@ -456,26 +529,9 @@ bool readUserInput(char ***input, int *word_count)
       (*word_count)++;
       char_count = 0;
       max_chars = INPUT_LENGTH;
-
-      if (*word_count == max_words)
-      {
-        max_words *= 2;
-        char **temp = realloc (*input, max_words * sizeof(char*));
-        if (AllocationError(temp))
-        {
-          freeInput(*input, *word_count);
-          return false;
-        }
-        *input = temp;
-        temp = NULL;
-      }
-
-      (*input)[*word_count] = malloc(max_chars * sizeof(char));
-      if (AllocationError((*input)[*word_count]))
-      {
-        freeInput(*input, *word_count);
+      
+      if(!allocateWordMemory(input, *word_count, &max_words, max_chars))
         return false;
-      }
     }
 
     if (ch != ' ')
@@ -483,18 +539,8 @@ bool readUserInput(char ***input, int *word_count)
       (*input)[*word_count][char_count] = tolower(ch);
       char_count++;
     
-      if (char_count == max_chars)
-      {
-        max_chars *= 2;
-        char *temp = realloc ((*input)[*word_count], max_chars * sizeof(char));
-        if (AllocationError(temp))
-        {
-          freeInput(*input, *word_count);
-          return false;
-        }
-        (*input)[*word_count] = temp;
-        temp = NULL;
-      }
+      if(!reallocCharMemory(input, *word_count, char_count, &max_chars))
+        return false;
     }
   }
   
@@ -623,7 +669,7 @@ bool isValue(char *string)
 /// convert the user's input into the value of a card.
 ///
 /// @param string one of the parameters the user input when entering the
-///                  play command
+///        play command
 ///
 /// @return int the value of the card that was input
 ///
@@ -643,7 +689,7 @@ int getCardValue(char *string)
 /// convert the user's input into the spice of a card.
 ///
 /// @param string one of the parameters the user input when entering the
-///                  play command
+///        play command
 ///
 /// @return char the spice of the card that was input
 ///
@@ -661,7 +707,7 @@ char getCardSpice(char *string)
 /// if they used the play command
 ///
 /// @param head the head of the linked list of cards that makes up the
-///             player's hand
+///        player's hand
 /// @param input a 2D array filled with the input
 ///
 /// @return true if the user's input corresponds to a hand card
@@ -730,7 +776,7 @@ bool wrongPlayFormat(char **input)
 /// @param player the current player
 /// @param opponent the current opposing player
 /// @param game a struct made up of the last played card (real and bluff),
-///             the number of played cards, and more
+///        the number of played cards, and more
 ///
 /// @return QUIT if the input was a valid quit command
 /// @return PLAY if the input was a valid play command
@@ -816,7 +862,7 @@ int isCorrectCommand(char **input, int word_count, Player player,
 /// @param input a 2D array filled with the input
 /// @param player the current player
 /// @param game a struct made up of the last played card (real and bluff),
-///             the number of played cards, and more
+///        the number of played cards, and more
 ///
 void playCard(char **input, Player *player, GameStatistics *game)
 {
@@ -859,7 +905,7 @@ void drawCard(Player *player, Card **draw_pile)
 /// @param opponent the current opposing player
 /// @param draw_pile a linked list of cards
 /// @param game a struct made up of the last played card (real and bluff),
-///             the number of played cards, and more
+///        the number of played cards, and more
 ///
 /// @return Player the player who won the challenge
 ///
@@ -1115,14 +1161,14 @@ void freeAllCards(Player player_one, Player player_two, Card *draw_pile)
 /// @param argv string of command line parameters
 ///
 /// @return COMMAND_LINE_PARAMETERS_ERROR if the wrong number of command
-///             line parameters were entered
+///         line parameters were entered
 /// @return CONFIG_FILE_ERROR if the config file can't be opened for
-///             reading
+///         reading
 /// @return MAGIC_NUM_ERROR if the config file does not have the right
-///             magic number at the start
+///         magic number at the start
 /// @return MEMORY_ERROR if a memory allocation error occurs
 /// @return 0 if quit was entered as a player's input or if the program 
-///           finishes as intended
+///         finishes as intended
 /// 
 int main(int argc, char *argv[])
 {
