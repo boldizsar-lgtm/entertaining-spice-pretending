@@ -39,7 +39,8 @@ typedef enum
   QUIT = 5,
   PLAY = 6,
   CHALLENGE = 7,
-  DRAW = 8
+  DRAW = 8,
+  REVEAL = 9
 } Command;
 
 typedef struct _Card_
@@ -49,10 +50,12 @@ typedef struct _Card_
   struct _Card_ *next_;
 } Card;
 
+/// ADDED IS REVEAL USABLE
 typedef struct _Player_
 {
   int number_;
   int score_;
+  bool is_reveal_usable_;
   Card *hand_;
 } Player;
 
@@ -697,6 +700,12 @@ bool isValue(char *string)
   return strcmp(string, "value") == 0;
 }
 
+/// ADDED UNIVERSAL STRING COMPARE FUNCTION
+bool compareString(char *a, char *b)
+{
+  return strcmp(a, b) == 0;
+}
+
 //-----------------------------------------------------------------------------
 /// convert the user's input into the value of a card.
 ///
@@ -871,12 +880,21 @@ int isCorrectCommand(char **input, int word_count, Player player,
 
   else if (isDraw(input[0]))
   {
-  if (word_count != 1)
-    printf("Please enter the correct number of parameters!\n");
-  else if (opponent.hand_ == NULL)
-    printf("Please enter a command you can use at the moment!\n");
-  else
-    return DRAW;
+    if (word_count != 1)
+      printf("Please enter the correct number of parameters!\n");
+    else if (opponent.hand_ == NULL)
+      printf("Please enter a command you can use at the moment!\n");
+    else
+      return DRAW;
+  }
+
+  /// ADDED REVEAL COMMAND CHECK
+  else if (compareString(input[0], "reveal"))
+  {
+    if (player.is_reveal_usable_ == false || game.played_cards_count_ == 0)
+      printf("Please enter a command you can use at the moment!\n");
+    else
+      return REVEAL;
   }
 
   else
@@ -1095,6 +1113,14 @@ int gameRounds(Player *player_one, Player *player_two, Card **draw_pile)
           switchPlayerTurn(&player, &opponent);
           game.is_challengeable_ = false;
         }
+        /// ADDED REVEAL COMMAND
+        if (command == REVEAL)
+        {
+          game.played_as_ = game.real_played_;
+          game.is_challengeable_ = false;
+          player->is_reveal_usable_ = false;
+          switchPlayerTurn(&player, &opponent);
+        }
         freeInput(input, word_count);
       }
       if (command == CHALLENGE)
@@ -1219,8 +1245,8 @@ int main(int argc, char *argv[])
 
   printf("Welcome to Entertaining Spice Pretending!\n");
 
-  Player player_one = {1, 0, NULL};
-  Player player_two = {2, 0, NULL};
+  Player player_one = {1, 0, true, NULL};
+  Player player_two = {2, 0, true, NULL};
   Card *draw_pile = NULL;
 
   if (!distributeCards(file, &player_one.hand_, &player_two.hand_, &draw_pile))
